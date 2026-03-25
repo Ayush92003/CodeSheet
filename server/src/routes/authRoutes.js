@@ -19,7 +19,7 @@ router.get(
     });
 
     res.redirect(
-      `http://localhost:5173/?token=${token}&name=${encodeURIComponent(req.user.name)}&email=${req.user.email}`,
+      `${process.env.FRONTEND_URL}/?token=${token}&name=${user.name}&email=${user.email}`,
     );
   },
 );
