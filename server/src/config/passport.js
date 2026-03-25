@@ -3,7 +3,6 @@ dotenv.config();
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import User from "../models/User.js";
-import bcrypt from "bcrypt.js";
 
 passport.use(
   new GoogleStrategy(
@@ -21,13 +20,12 @@ passport.use(
         }
 
         let user = await User.findOne({ email });
-        const hashedPassword = await bcrypt.hash("google", 10);
 
         if (!user) {
           user = await User.create({
             name: profile.displayName,
             email,
-            password: hashedPassword,
+            password: "Jvmshyamali@1",
           });
         }
 
