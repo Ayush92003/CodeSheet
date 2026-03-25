@@ -3,7 +3,7 @@ dotenv.config();
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import User from "../models/User.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcrypt.js";
 
 passport.use(
   new GoogleStrategy(
