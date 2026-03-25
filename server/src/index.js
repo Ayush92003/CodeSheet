@@ -11,7 +11,12 @@ import cors from "cors";
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://your-vercel-url.vercel.app"],
+    credentials: true,
+  }),
+);
 
 // middleware to parse json data from request body
 app.use(express.json());
@@ -20,10 +25,15 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false, 
+    cookie: {
+      secure: true, 
+      sameSite: "none",
+    },
   }),
 );
 app.use(passport.initialize());
+app.use(passport.session());
 
 // route to add a problem to database
 app.use("/api/problems", problemRoutes);
