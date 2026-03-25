@@ -35,7 +35,7 @@ export default function AddProblem({ onClose, onSuccess }) {
     const token = localStorage.getItem("token");
 
     try {
-      await axios.post("http://localhost:5000/api/problems", form, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/problems`, form, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

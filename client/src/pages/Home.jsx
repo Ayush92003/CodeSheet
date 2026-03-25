@@ -43,11 +43,11 @@ export default function Home() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const p = await axios.get("http://localhost:5000/api/problems");
+        const p = await axios.get(`${import.meta.env.VITE_API_URL}/api/problems`);
         setProblems(p.data);
 
         if (token) {
-          const u = await axios.get("http://localhost:5000/api/users/me", {
+          const u = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/me`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           setSolved(u.data.solvedProblems);
@@ -92,7 +92,7 @@ export default function Home() {
     const token = localStorage.getItem("token");
 
     const res = await axios.post(
-      `http://localhost:5000/api/users/mark-done/${id}`,
+      `${import.meta.env.VITE_API_URL}/api/users/mark-done/${id}`,
       {},
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -112,11 +112,11 @@ export default function Home() {
 
   const fetchData = async () => {
     try {
-      const p = await axios.get("http://localhost:5000/api/problems");
+      const p = await axios.get(`${import.meta.env.VITE_API_URL}/api/problems`);
       setProblems(p.data);
 
       if (token) {
-        const u = await axios.get("http://localhost:5000/api/users/me", {
+        const u = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
