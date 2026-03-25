@@ -19,7 +19,7 @@ router.get(
     });
 
     res.redirect(
-      `${process.env.FRONTEND_URL}/?token=${token}&name=${user.name}&email=${user.email}`,
+      `${process.env.FRONTEND_URL}/?token=${token}&name=${req.user.name}&email=${req.user.email}`,
     );
   },
 );

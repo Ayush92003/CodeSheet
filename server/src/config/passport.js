@@ -25,7 +25,7 @@ passport.use(
           user = await User.create({
             name: profile.displayName,
             email,
-            password: "Jvmshyamali@1",
+            password: "google-auth-user",
           });
         }
 
@@ -37,5 +37,18 @@ passport.use(
     },
   ),
 );
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (err) {
+    done(err, null);
+  }
+});
 
 export default passport;
