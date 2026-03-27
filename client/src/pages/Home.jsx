@@ -11,6 +11,7 @@ import {
   patternDescriptions,
   subPatternDescriptions,
 } from "../data/patternDescriptions.js";
+import Loader from "../components/Loader.jsx";
 
 export default function Home() {
   const [problems, setProblems] = useState([]);
@@ -41,6 +42,7 @@ export default function Home() {
 
   useEffect(() => {
     const fetchData = async () => {
+      console.log("ENV:", import.meta.env.VITE_API_URL);
       setLoading(true);
       try {
         const p = await axios.get(`${import.meta.env.VITE_API_URL}/api/problems`);
@@ -139,8 +141,10 @@ export default function Home() {
   ).length;
   const hardSolved = hardProblems.filter((p) => solved.includes(p._id)).length;
 
+  if (loading) return <Loader />;
+
   return (
-    <div className="bg-black min-h-screen text-white pt-20">
+    <div className="page-enter bg-black min-h-screen text-white pt-20">
       <div className="max-w-6xl mx-auto px-6">
         {/* Header */}
         <h1 className="text-4xl font-bold mb-2">Code Sheet for DSA Mastery</h1>
