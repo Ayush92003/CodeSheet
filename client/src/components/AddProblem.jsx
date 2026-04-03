@@ -19,15 +19,13 @@ export default function AddProblem({ onClose, onSuccess }) {
 
   const [show, setShow] = useState(false);
 
-  // 🔥 Show with animation
   useEffect(() => {
     setShow(true);
   }, []);
 
-  // 🔥 Close with animation
   const handleClose = () => {
     setShow(false);
-    setTimeout(onClose, 200); // wait animation
+    setTimeout(onClose, 200);
   };
 
   const handleSubmit = async (e) => {
@@ -49,15 +47,15 @@ export default function AddProblem({ onClose, onSuccess }) {
 
   return (
     <div
-      onClick={handleClose} // 🔥 click outside close
+      onClick={handleClose}
       className={`fixed inset-0 flex items-center justify-center z-50 px-4 transition-all duration-300 ${
         show ? "bg-black/70 backdrop-blur-sm" : "bg-black/0"
       }`}
     >
-      {/* STOP PROPAGATION */}
+      {/* MODAL */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`bg-[#0f0f0f] w-full max-w-2xl rounded-2xl border border-gray-800 shadow-xl max-h-[90vh] overflow-y-auto transition-all duration-300 ${
+        className={`bg-[#111827]/90 backdrop-blur-md w-full max-w-2xl rounded-2xl border border-gray-800 shadow-2xl max-h-[90vh] overflow-y-auto transition-all duration-300 ${
           show
             ? "opacity-100 scale-100 translate-y-0"
             : "opacity-0 scale-95 translate-y-5"
@@ -65,11 +63,13 @@ export default function AddProblem({ onClose, onSuccess }) {
       >
         {/* HEADER */}
         <div className="flex justify-between items-center px-6 py-4 border-b border-gray-800">
-          <h2 className="text-xl font-semibold">Add New Problem</h2>
+          <h2 className="text-xl font-semibold text-purple-300">
+            Add New Problem
+          </h2>
 
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-white transition"
+            className="text-gray-400 hover:text-purple-400 transition"
           >
             <CloseIcon />
           </button>
@@ -79,20 +79,20 @@ export default function AddProblem({ onClose, onSuccess }) {
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* BASIC INFO */}
           <div className="space-y-4">
-            <h3 className="text-sm text-gray-400 uppercase tracking-wide">
+            <h3 className="text-xs text-gray-400 uppercase tracking-wide">
               Basic Info
             </h3>
 
             <input
               placeholder="Problem Title"
-              className="w-full p-3 bg-[#1a1a1a] rounded-lg border border-gray-700 focus:outline-none focus:border-green-500"
+              className="w-full p-3 bg-[#0f172a] rounded-lg border border-gray-700 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
             />
 
             <input
               placeholder="LeetCode Link"
-              className="w-full p-3 bg-[#1a1a1a] rounded-lg border border-gray-700 focus:outline-none focus:border-green-500"
+              className="w-full p-3 bg-[#0f172a] rounded-lg border border-gray-700 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
               value={form.links.leetcode}
               onChange={(e) =>
                 setForm({
@@ -104,7 +104,7 @@ export default function AddProblem({ onClose, onSuccess }) {
 
             <input
               placeholder="GFG Link"
-              className="w-full p-3 bg-[#1a1a1a] rounded-lg border border-gray-700 focus:outline-none focus:border-green-500"
+              className="w-full p-3 bg-[#0f172a] rounded-lg border border-gray-700 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
               value={form.links.gfg}
               onChange={(e) =>
                 setForm({
@@ -117,13 +117,13 @@ export default function AddProblem({ onClose, onSuccess }) {
 
           {/* CLASSIFICATION */}
           <div className="space-y-4">
-            <h3 className="text-sm text-gray-400 uppercase tracking-wide">
+            <h3 className="text-xs text-gray-400 uppercase tracking-wide">
               Classification
             </h3>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <select
-                className="p-3 bg-[#1a1a1a] rounded-lg border border-gray-700 focus:outline-none focus:border-green-500"
+                className="p-3 bg-[#0f172a] rounded-lg border border-gray-700 focus:outline-none focus:border-purple-500"
                 value={form.difficulty}
                 onChange={(e) =>
                   setForm({ ...form, difficulty: e.target.value })
@@ -135,13 +135,13 @@ export default function AddProblem({ onClose, onSuccess }) {
               </select>
 
               <select
-                className="p-3 bg-[#1a1a1a] rounded-lg border border-gray-700 focus:outline-none focus:border-green-500"
+                className="p-3 bg-[#0f172a] rounded-lg border border-gray-700 focus:outline-none focus:border-purple-500"
                 value={form.pattern}
                 onChange={(e) =>
                   setForm({
                     ...form,
                     pattern: e.target.value,
-                    subPattern: patternConfig[e.target.value][0], // 🔥 auto reset
+                    subPattern: patternConfig[e.target.value][0],
                   })
                 }
               >
@@ -152,7 +152,7 @@ export default function AddProblem({ onClose, onSuccess }) {
             </div>
 
             <select
-              className="w-full p-3 bg-[#1a1a1a] rounded-lg border border-gray-700 focus:outline-none focus:border-green-500"
+              className="w-full p-3 bg-[#0f172a] rounded-lg border border-gray-700 focus:outline-none focus:border-purple-500"
               value={form.subPattern}
               onChange={(e) => setForm({ ...form, subPattern: e.target.value })}
             >
@@ -164,13 +164,13 @@ export default function AddProblem({ onClose, onSuccess }) {
 
           {/* NOTES */}
           <div className="space-y-4">
-            <h3 className="text-sm text-gray-400 uppercase tracking-wide">
+            <h3 className="text-xs text-gray-400 uppercase tracking-wide">
               Notes
             </h3>
 
             <textarea
               placeholder="Approach / Tricks"
-              className="w-full p-3 bg-[#1a1a1a] rounded-lg border border-gray-700 h-24 focus:outline-none focus:border-green-500"
+              className="w-full p-3 bg-[#0f172a] rounded-lg border border-gray-700 h-24 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
               value={form.notes}
               onChange={(e) => setForm({ ...form, notes: e.target.value })}
             />
@@ -178,13 +178,13 @@ export default function AddProblem({ onClose, onSuccess }) {
 
           {/* SOLUTION */}
           <div className="space-y-4">
-            <h3 className="text-sm text-gray-400 uppercase tracking-wide">
+            <h3 className="text-xs text-gray-400 uppercase tracking-wide">
               Solution
             </h3>
 
             <textarea
               placeholder="Code / Explanation"
-              className="w-full p-3 bg-[#1a1a1a] rounded-lg border border-gray-700 h-32 focus:outline-none focus:border-green-500"
+              className="w-full p-3 bg-[#0f172a] rounded-lg border border-gray-700 h-32 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
               value={form.solution}
               onChange={(e) => setForm({ ...form, solution: e.target.value })}
             />
@@ -195,12 +195,12 @@ export default function AddProblem({ onClose, onSuccess }) {
             <button
               type="button"
               onClick={handleClose}
-              className="px-4 py-2 rounded-lg border border-gray-700 text-gray-400 hover:text-white"
+              className="px-4 py-2 rounded-lg border border-gray-700 text-gray-400 hover:text-white transition"
             >
               Cancel
             </button>
 
-            <button className="px-5 py-2 rounded-lg bg-green-500 text-black font-semibold cursor-pointer hover:bg-green-400">
+            <button className="px-5 py-2 rounded-lg bg-purple-500 hover:bg-purple-600 text-white font-semibold shadow-md shadow-purple-500/20 transition">
               Add Problem
             </button>
           </div>
