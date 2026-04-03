@@ -1,31 +1,29 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+
 import Dashboard from "../components/Dashboard";
 import RightStats from "../components/RightStats";
 import FilterBar from "../components/FilterBar";
 import ProblemItem from "../components/ProblemItem";
 import AddProblem from "../components/AddProblem";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import { useRef } from "react";
+
 import {
   patternDescriptions,
   subPatternDescriptions,
 } from "../data/patternDescriptions.js";
+
 import Loader from "../components/Loader.jsx";
 
 export default function Home() {
-  const [problems, setProblems] = useState([]);
-  const [solved, setSolved] = useState([]);
-  const [streak, setStreak] = useState(0);
-  const [userData, setUserData] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [openMap, setOpenMap] = useState({});
-  const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem("token");
+  const queryClient = useQueryClient();
 
-  const contentRefs = useRef({});
-
+  // 🔥 OAuth redirect (UNCHANGED)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
 
@@ -40,32 +38,38 @@ export default function Home() {
     }
   }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      console.log("ENV:", import.meta.env.VITE_API_URL);
-      setLoading(true);
-      try {
-        const p = await axios.get(`${import.meta.env.VITE_API_URL}/api/problems`);
-        setProblems(p.data);
+  // 🔥 Problems (React Query)
+  const { data: problems = [], isLoading } = useQuery({
+    queryKey: ["problems"],
+    queryFn: async () => {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/problems`,
+      );
+      return res.data;
+    },
+    staleTime: 1000 * 60 * 5,
+  });
 
-        if (token) {
-          const u = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/me`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setSolved(u.data.solvedProblems);
-          setStreak(u.data.streak);
-          setUserData(u.data);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // 🔥 User data (React Query)
+  const { data: userData } = useQuery({
+    queryKey: ["user"],
+    queryFn: async () => {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/users/me`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      return res.data;
+    },
+    enabled: !!token,
+  });
 
-    fetchData();
-  }, [token]);
+  // ✅ derived state (NO useState)
+  const solved = userData?.solvedProblems || [];
+  const streak = userData?.streak || 0;
 
+  // 🔥 toggle accordion (UNCHANGED)
   const toggleOpen = (key) => {
     setOpenMap((prev) => ({
       ...prev,
@@ -73,64 +77,36 @@ export default function Home() {
     }));
   };
 
+  // 🔥 group data (UNCHANGED)
   const groupedData = {};
-
   problems.forEach((p) => {
     const pattern = p.pattern || "Other";
-    const sub = p.subPattern || "General"; // 🔥 FIX
+    const sub = p.subPattern || "General";
 
-    if (!groupedData[pattern]) {
-      groupedData[pattern] = {};
-    }
-
-    if (!groupedData[pattern][sub]) {
-      groupedData[pattern][sub] = [];
-    }
+    if (!groupedData[pattern]) groupedData[pattern] = {};
+    if (!groupedData[pattern][sub]) groupedData[pattern][sub] = [];
 
     groupedData[pattern][sub].push(p);
   });
 
+  // 🔥 toggle solved (React Query invalidate)
   const handleToggle = async (id) => {
-    const token = localStorage.getItem("token");
-
-    const res = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/users/mark-done/${id}`,
-      {},
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    );
-
-    setSolved((prev) => {
-      const exists = prev.some((x) => x.toString() === id);
-
-      return exists ? prev.filter((x) => x.toString() !== id) : [...prev, id];
-    });
-
-    if (res.data.streak !== undefined) {
-      setStreak(res.data.streak);
-    }
-  };
-
-  const fetchData = async () => {
     try {
-      const p = await axios.get(`${import.meta.env.VITE_API_URL}/api/problems`);
-      setProblems(p.data);
-
-      if (token) {
-        const u = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/me`, {
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/users/mark-done/${id}`,
+        {},
+        {
           headers: { Authorization: `Bearer ${token}` },
-        });
+        },
+      );
 
-        setSolved(u.data.solvedProblems);
-        setStreak(u.data.streak);
-        setUserData(u.data);
-      }
+      queryClient.invalidateQueries(["user"]);
     } catch (err) {
       console.error(err);
     }
   };
 
+  // 🔥 stats (UNCHANGED)
   const easyProblems = problems.filter((p) => p.difficulty === "Easy");
   const mediumProblems = problems.filter((p) => p.difficulty === "Medium");
   const hardProblems = problems.filter((p) => p.difficulty === "Hard");
@@ -141,10 +117,11 @@ export default function Home() {
   ).length;
   const hardSolved = hardProblems.filter((p) => solved.includes(p._id)).length;
 
-  if (loading) return <Loader />;
-
   return (
     <div className="page-enter bg-black min-h-screen text-white pt-20">
+      {/* ✅ loader (same style) */}
+      {isLoading && <Loader />}
+
       <div className="max-w-6xl mx-auto px-6">
         {/* Header */}
         <h1 className="text-4xl font-bold mb-2">Code Sheet for DSA Mastery</h1>
@@ -164,7 +141,7 @@ export default function Home() {
         {showModal && (
           <AddProblem
             onClose={() => setShowModal(false)}
-            onSuccess={fetchData} // simple for now
+            onSuccess={() => queryClient.invalidateQueries(["problems"])}
           />
         )}
 
@@ -178,7 +155,7 @@ export default function Home() {
           </button>
         </div>
 
-        {/* 🔥 CONDITIONAL DASHBOARD */}
+        {/* Dashboard */}
         {token && (
           <div className="grid grid-cols-3 gap-6 mb-10 items-stretch">
             <div className="col-span-2">
@@ -194,10 +171,9 @@ export default function Home() {
           </div>
         )}
 
-        {/* 🔥 FILTER + LIST (always visible) */}
         <FilterBar />
 
-        {/* 🔥 NEW PATTERN UI */}
+        {/* 🔥 SAME UI BELOW */}
         {Object.keys(groupedData).map((pattern) => (
           <div key={pattern} className="mt-10">
             <h2 className="text-2xl font-bold">{pattern}</h2>
@@ -219,14 +195,11 @@ export default function Home() {
 
               return (
                 <div key={sub} className="mb-3">
-                  {/* HEADER */}
                   <div
                     onClick={() => toggleOpen(key)}
                     className="bg-[#111] p-5 rounded-xl border border-gray-800 flex items-center justify-between cursor-pointer hover:bg-[#151515] transition"
                   >
-                    {/* LEFT SIDE */}
                     <div className="flex items-center gap-3">
-                      {/* ICON LEFT */}
                       <KeyboardArrowRightIcon
                         className={`w-5 h-5 transition-transform duration-300 ${
                           isOpen ? "rotate-90" : ""
@@ -236,13 +209,11 @@ export default function Home() {
                       <div>
                         <h3 className="font-semibold text-gray-200">{sub}</h3>
                         <p className="text-sm text-gray-500">
-                          {subPatternDescriptions[sub] ||
-                            "Practice problems for mastery."}
+                          {subPatternDescriptions[sub]}
                         </p>
                       </div>
                     </div>
 
-                    {/* RIGHT SIDE */}
                     <div className="flex items-center gap-4">
                       <span className="text-sm text-gray-400">
                         {solvedCount}/{list.length}
@@ -260,20 +231,13 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* 🔥 ACCORDION */}
+                  {/* accordion fix */}
                   <div
-                    style={{
-                      height: isOpen
-                        ? contentRefs.current[key]?.scrollHeight + "px"
-                        : "0px",
-                      transition: "height 0.3s ease",
-                      overflow: "hidden",
-                    }}
+                    className={`overflow-hidden transition-all duration-300 ${
+                      isOpen ? "max-h-250" : "max-h-0"
+                    }`}
                   >
-                    <div
-                      ref={(el) => (contentRefs.current[key] = el)}
-                      className="bg-[#0f0f0f] rounded-xl border border-gray-800"
-                    >
+                    <div className="bg-[#0f0f0f] rounded-xl border border-gray-800">
                       {list.map((p) => (
                         <ProblemItem
                           key={p._id}
