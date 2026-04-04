@@ -90,6 +90,19 @@ export default function Home() {
   // toggle solved
   const handleToggle = async (id) => {
     try {
+      queryClient.setQueryData(["user"], (oldData) => {
+        if (!oldData) return oldData;
+
+        const alreadySolved = oldData.solvedProblems.includes(id);
+
+        return {
+          ...oldData,
+          solvedProblems: alreadySolved
+            ? oldData.solvedProblems.filter((p) => p !== id)
+            : [...oldData.solvedProblems, id],
+        };
+      });
+
       await axios.post(
         `${import.meta.env.VITE_API_URL}/api/users/mark-done/${id}`,
         {},
@@ -97,10 +110,8 @@ export default function Home() {
           headers: { Authorization: `Bearer ${token}` },
         },
       );
-
+    } catch {
       queryClient.invalidateQueries(["user"]);
-    } catch (err) {
-      console.error(err);
     }
   };
 
