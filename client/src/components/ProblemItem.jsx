@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { FaYoutube, FaLink, FaRegBookmark } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { FaLink, FaRegBookmark } from "react-icons/fa";
 import { SiLeetcode, SiGeeksforgeeks } from "react-icons/si";
 
 export default function ProblemItem({ problem, solved, onToggle }) {
@@ -7,6 +7,17 @@ export default function ProblemItem({ problem, solved, onToggle }) {
 
   const [showNotes, setShowNotes] = useState(false);
   const [note, setNote] = useState(problem.notes || "");
+
+  const [localSolved, setLocalSolved] = useState(isSolved);
+
+  useEffect(() => {
+    setLocalSolved(isSolved);
+  }, [isSolved]);
+
+  const handleToggle = () => {
+    setLocalSolved((prev) => !prev); 
+    onToggle(problem._id); 
+  };
 
   return (
     <div className="px-4 sm:px-5 py-4 border-b border-gray-800 hover:bg-[#15162b] transition-all duration-200">
@@ -16,12 +27,16 @@ export default function ProblemItem({ problem, solved, onToggle }) {
         <div className="flex items-center gap-3 sm:gap-4">
           <input
             type="checkbox"
-            checked={isSolved}
-            onChange={() => onToggle(problem._id)}
+            checked={localSolved} 
+            onChange={handleToggle} 
             className="w-5 h-5 accent-purple-500 cursor-pointer"
           />
 
-          <h3 className="font-normal text-sm sm:text-base text-zinc-300">
+          <h3
+            className={`font-normal text-sm sm:text-base ${
+              localSolved ? "text-gray-500" : "text-zinc-300"
+            }`}
+          >
             {problem.title}
           </h3>
         </div>
