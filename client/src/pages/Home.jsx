@@ -19,6 +19,8 @@ import Loader from "../components/Loader.jsx";
 export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [openMap, setOpenMap] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [difficulty, setDifficulty] = useState("all");
 
   const token = localStorage.getItem("token");
   const queryClient = useQueryClient();
@@ -75,9 +77,25 @@ export default function Home() {
     }));
   };
 
-  // group data
+  // ✅ FILTER FIRST
+  const filteredProblems = problems.filter((p) => {
+    const problemName = p.name || p.title || "";
+    const difficultyValue = p.difficulty || "";
+
+    const matchesSearch = problemName
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+
+    const matchesDifficulty =
+      difficulty === "all" ||
+      difficultyValue.toLowerCase() === difficulty.toLowerCase();
+
+    return matchesSearch && matchesDifficulty;
+  });
+
+  // ✅ GROUP AFTER FILTER
   const groupedData = {};
-  problems.forEach((p) => {
+  filteredProblems.forEach((p) => {
     const pattern = p.pattern || "Other";
     const sub = p.subPattern || "General";
 
@@ -175,7 +193,12 @@ export default function Home() {
         )}
 
         {/* Filter */}
-        <FilterBar />
+        <FilterBar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          difficulty={difficulty}
+          setDifficulty={setDifficulty}
+        />
 
         {/* Patterns */}
         {Object.keys(groupedData).map((pattern) => (
