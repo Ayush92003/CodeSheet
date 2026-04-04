@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { FaLink, FaRegBookmark } from "react-icons/fa";
 import { SiLeetcode, SiGeeksforgeeks } from "react-icons/si";
+import { fireConfetti } from "../utils/confetti";
 
 export default function ProblemItem({ problem, solved, onToggle }) {
   const isSolved = solved.some((id) => id.toString() === problem._id);
@@ -15,8 +16,14 @@ export default function ProblemItem({ problem, solved, onToggle }) {
   }, [isSolved]);
 
   const handleToggle = () => {
-    setLocalSolved((prev) => !prev); 
-    onToggle(problem._id); 
+    const newState = !localSolved;
+
+    setLocalSolved(newState);
+    onToggle(problem._id);
+
+    if (newState) {
+      fireConfetti();
+    }
   };
 
   return (
