@@ -53,6 +53,10 @@ app.use("/api/auth", authRoutes);
 
 app.use("/api/users", userRoutes);
 
+app.get("/health", (req, res) => {
+  res.send("OK");
+});
+
 
 // server listening on port 5000
 
