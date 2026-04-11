@@ -4,7 +4,12 @@ export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
 
   const handleGoogle = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`;
+    const API_URL =
+      window.location.hostname === "localhost"
+        ? "http://localhost:5000"
+        : "https://codesheet-1.onrender.com";
+
+    window.location.href = `${API_URL}/api/auth/google`;
   };
 
   return (
