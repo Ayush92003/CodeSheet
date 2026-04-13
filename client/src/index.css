@@ -20,3 +20,6 @@ html, body, #root {
 .page-enter {
   animation: fadeIn 0.5s ease;
 }
+body {
+  font-family: 'Inter', sans-serif;
+}

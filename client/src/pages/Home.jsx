@@ -163,7 +163,7 @@ export default function Home() {
         {userData?.isAdmin && (
           <button
             onClick={() => setShowModal(true)}
-            className="mb-6 px-5 py-2 bg-purple-500 hover:bg-purple-600 text-white shadow-lg shadow-purple-500/20 rounded-lg font-semibold"
+            className="mb-6 px-5 py-2 bg-purple-500 hover:bg-purple-600 text-white shadow-lg cursor-pointer shadow-purple-500/20 rounded-lg font-semibold"
           >
             + Add Problem
           </button>

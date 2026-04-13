@@ -12,7 +12,7 @@ export default function Dashboard({ solved, total }) {
         <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2">
           Keep pushing,{" "}
           <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-indigo-400">
-            {user?.name || "Coder"}
+            {user?.name.substring(0, user?.name.indexOf(" ")) || "Coder"}
           </span>
           !
         </h2>

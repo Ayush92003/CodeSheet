@@ -69,7 +69,7 @@ export default function AddProblem({ onClose, onSuccess }) {
 
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-purple-400 transition"
+            className="text-gray-400 cursor-pointer hover:text-purple-400 transition"
           >
             <CloseIcon />
           </button>
@@ -195,12 +195,12 @@ export default function AddProblem({ onClose, onSuccess }) {
             <button
               type="button"
               onClick={handleClose}
-              className="px-4 py-2 rounded-lg border border-gray-700 text-gray-400 hover:text-white transition"
+              className="px-4 py-2 cursor-pointer rounded-lg border border-gray-700 text-gray-400 hover:text-white transition"
             >
               Cancel
             </button>
 
-            <button className="px-5 py-2 rounded-lg bg-purple-500 hover:bg-purple-600 text-white font-semibold shadow-md shadow-purple-500/20 transition">
+            <button className="px-5 py-2 cursor-pointer rounded-lg bg-purple-500 hover:bg-purple-600 text-white font-semibold shadow-md shadow-purple-500/20 transition">
               Add Problem
             </button>
           </div>
