@@ -2,8 +2,10 @@ import { memo, useState, useEffect } from "react";
 import { FaLink, FaRegBookmark } from "react-icons/fa";
 import { SiLeetcode, SiGeeksforgeeks } from "react-icons/si";
 import { fireConfetti } from "../utils/confetti";
+import { FaEdit } from "react-icons/fa";
+import EditModal from "./EditModal";
 
-function ProblemItem({ problem, isSolved, onToggle }) {
+function ProblemItem({ problem, isSolved, onToggle, user, onEdit }) {
   const [showNotes, setShowNotes] = useState(false);
   const [note, setNote] = useState(problem.notes || "");
 
@@ -114,7 +116,7 @@ function ProblemItem({ problem, isSolved, onToggle }) {
 
               <button
                 onClick={() => setShowNotes(!showNotes)}
-                className={`rounded-lg p-2 transition ${
+                className={`cursor-pointer rounded-lg p-2 transition ${
                   showNotes
                     ? "bg-purple-500/20 text-purple-300"
                     : "text-slate-400 hover:bg-purple-500/10 hover:text-purple-300"
@@ -125,10 +127,20 @@ function ProblemItem({ problem, isSolved, onToggle }) {
 
               <button
                 onClick={() => alert(problem.solution || "No solution yet")}
-                className="rounded-lg p-2 text-slate-400 transition hover:bg-indigo-500/10 hover:text-indigo-300"
+                className="cursor-pointer rounded-lg p-2 text-slate-400 transition hover:bg-indigo-500/10 hover:text-indigo-300"
               >
                 <FaLink />
               </button>
+
+              {user?.isAdmin && (
+                <button
+                  onClick={() => onEdit(problem)}
+                  className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium text-gray-400 hover:text-purple-300 hover:bg-purple-500/10 transition"
+                >
+                  <FaEdit className="text-sm" />
+                  <span className="hidden sm:inline">Edit</span>
+                </button>
+              )}
             </div>
           </div>
         </div>

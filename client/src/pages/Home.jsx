@@ -15,12 +15,14 @@ import {
 } from "../data/patternDescriptions.js";
 
 import Loader from "../components/Loader.jsx";
+import EditModal from "../components/EditModal.jsx";
 
 export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [openMap, setOpenMap] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [difficulty, setDifficulty] = useState("all");
+  const [editProblem, setEditProblem] = useState(null);
 
   const token = localStorage.getItem("token");
   const queryClient = useQueryClient();
@@ -176,6 +178,14 @@ export default function Home() {
           />
         )}
 
+        {editProblem && (
+          <EditModal
+            problem={editProblem}
+            onClose={() => setEditProblem(null)}
+            onSuccess={() => queryClient.invalidateQueries(["problems"])}
+          />
+        )}
+
         {/* Dashboard */}
         {token && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
@@ -276,6 +286,8 @@ export default function Home() {
                           problem={p}
                           solved={solved}
                           onToggle={handleToggle}
+                          user={userData}
+                          onEdit={setEditProblem}
                         />
                       ))}
                     </div>
