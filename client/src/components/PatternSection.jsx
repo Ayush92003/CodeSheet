@@ -13,23 +13,32 @@ export default function PatternSection({ title, problems, solved, onToggle }) {
       {/* HEADER */}
       <div
         onClick={() => setOpen(!open)}
-        className="flex justify-between items-center bg-[#111] px-5 py-4 rounded-lg cursor-pointer border border-gray-800"
+        className="flex flex-col gap-1 bg-[#111] px-5 py-4 rounded-xl cursor-pointer border border-gray-800 hover:border-purple-500/30 transition"
       >
-        <h2 className="font-semibold">{title}</h2>
+        <div className="flex justify-between items-center">
+          <h2 className="font-semibold text-zinc-200">{title}</h2>
 
-        <span className="text-sm text-gray-400">
-          {solvedCount} / {problems.length}
-        </span>
+          <span className="text-sm text-gray-400">
+            {solvedCount} / {problems.length}
+          </span>
+        </div>
+
+        {/* optional description */}
+        {problems[0]?.subPattern && (
+          <p className="text-xs sm:text-sm text-gray-500">
+            {problems[0].subPattern}
+          </p>
+        )}
       </div>
 
       {/* LIST */}
       {open && (
-        <div className="mt-2 bg-[#0f0f0f] rounded-lg border border-gray-800">
+        <div className="mt-4 flex flex-col gap-4">
           {problems.map((p) => (
             <ProblemItem
               key={p._id}
               problem={p}
-              solved={solved}
+              isSolved={solved.some((id) => id.toString() === p._id)}
               onToggle={onToggle}
             />
           ))}

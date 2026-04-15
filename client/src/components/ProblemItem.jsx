@@ -1,11 +1,9 @@
-import { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import { FaLink, FaRegBookmark } from "react-icons/fa";
 import { SiLeetcode, SiGeeksforgeeks } from "react-icons/si";
 import { fireConfetti } from "../utils/confetti";
 
-export default function ProblemItem({ problem, solved, onToggle }) {
-  const isSolved = solved.some((id) => id.toString() === problem._id);
-
+function ProblemItem({ problem, isSolved, onToggle }) {
   const [showNotes, setShowNotes] = useState(false);
   const [note, setNote] = useState(problem.notes || "");
 
@@ -26,114 +24,133 @@ export default function ProblemItem({ problem, solved, onToggle }) {
     }
   };
 
+  const difficultyStyles = {
+    Easy: "text-emerald-300 border-emerald-400/40 bg-emerald-500/15",
+    Medium: "text-amber-300 border-amber-400/40 bg-amber-500/15",
+    Hard: "text-rose-300 border-rose-400/40 bg-rose-500/15",
+  };
+
   return (
-    <div className="px-4 sm:px-5 py-4 border-b border-gray-800 hover:bg-[#15162b] transition-all duration-200">
-      {/* TOP ROW */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        {/* LEFT */}
-        <div className="flex items-center gap-3 sm:gap-4">
-          <input
-            type="checkbox"
-            checked={localSolved} 
-            onChange={handleToggle} 
-            className="w-5 h-5 accent-purple-500 cursor-pointer"
-          />
+    <div className="px-3 py-3 sm:px-4 sm:py-4">
+      <div
+        className={`group rounded-2xl cursor-pointer border p-5 sm:p-6 transition-all duration-300 relative overflow-hidden ${
+          localSolved
+            ? "border-purple-400/30 bg-linear-to-r from-purple-500/10 to-indigo-500/10 shadow-[0_0_0_1px_rgba(168,85,247,0.15),0_14px_30px_-20px_rgba(168,85,247,0.55)]"
+            : "border-slate-700/70 bg-linear-to-r from-[#0f0f1a] via-[#12122a] to-[#18183a] hover:border-purple-400/40 hover:shadow-[0_14px_34px_-24px_rgba(168,85,247,0.6)]"
+        }`}
+      >
+        {/* subtle glow */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition bg-linear-to-r from-purple-500/5 via-transparent to-indigo-500/5 pointer-events-none" />
 
-          <h3
-            className={`font-normal text-sm sm:text-base ${
-              localSolved ? "text-gray-500" : "text-zinc-300"
-            }`}
-          >
-            {problem.title}
-          </h3>
-        </div>
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between relative z-10">
+          {/* LEFT */}
+          <div className="flex items-start gap-4">
+            <label className="relative mt-0.5 inline-flex cursor-pointer items-center">
+              <input
+                type="checkbox"
+                checked={localSolved}
+                onChange={handleToggle}
+                className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-slate-500 bg-slate-900/80 checked:border-purple-300 checked:bg-purple-400 focus:outline-none"
+              />
+              <span className="pointer-events-none absolute left-1.5 top-1.25 h-2 w-1 rotate-45 border-b-2 border-r-2 border-slate-900 opacity-0 transition peer-checked:opacity-100" />
+            </label>
 
-        {/* RIGHT */}
-        <div className="flex flex-wrap items-center gap-3 sm:gap-5">
-          {/* Difficulty */}
-          <span
-            className={`px-3 py-1 rounded-md text-xs sm:text-sm font-medium border
-              ${
-                problem.difficulty === "Easy" &&
-                "text-purple-300 border-purple-500/40 bg-purple-500/10"
-              }
-              ${
-                problem.difficulty === "Medium" &&
-                "text-indigo-300 border-indigo-500/40 bg-indigo-500/10"
-              }
-              ${
-                problem.difficulty === "Hard" &&
-                "text-pink-300 border-pink-500/40 bg-pink-500/10"
-              }
-            `}
-          >
-            {problem.difficulty}
-          </span>
+            <div className="space-y-1">
+              <h3
+                className={`text-sm sm:text-base font-medium tracking-wide ${
+                  localSolved
+                    ? "text-purple-200 line-through decoration-purple-400/70 decoration-2"
+                    : "text-slate-100"
+                }`}
+              >
+                {problem.title}
+              </h3>
 
-          {/* ICONS */}
-          <div className="flex items-center gap-3 sm:gap-4 text-base sm:text-lg">
-            {/* LeetCode */}
-            <a
-              href={problem.links?.leetcode || "#"}
-              target="_blank"
-              rel="noreferrer"
-              className={`transition ${
-                problem.links?.leetcode
-                  ? "text-orange-400 hover:scale-110"
-                  : "text-gray-600 cursor-not-allowed"
+              <p className="text-xs text-slate-400">
+                {localSolved ? "Completed" : "Mark as solved"}
+              </p>
+            </div>
+          </div>
+
+          {/* RIGHT */}
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+            {/* Difficulty */}
+            <span
+              className={`rounded-full border px-3 py-1 text-xs font-semibold tracking-wide ${
+                difficultyStyles[problem.difficulty] ||
+                "text-slate-300 border-slate-500/40 bg-slate-500/10"
               }`}
             >
-              <SiLeetcode />
-            </a>
+              {problem.difficulty}
+            </span>
 
-            {/* GFG */}
-            <a
-              href={problem.links?.gfg || "#"}
-              target="_blank"
-              rel="noreferrer"
-              className={`transition ${
-                problem.links?.gfg
-                  ? "text-green-400 hover:scale-110"
-                  : "text-gray-600 cursor-not-allowed"
-              }`}
-            >
-              <SiGeeksforgeeks />
-            </a>
+            {/* Icons */}
+            <div className="flex items-center gap-2.5 text-lg opacity-80 hover:opacity-100 transition">
+              <a
+                href={problem.links?.leetcode || "#"}
+                target="_blank"
+                rel="noreferrer"
+                className={`rounded-lg p-2 transition ${
+                  problem.links?.leetcode
+                    ? "text-orange-400 hover:bg-orange-400/10 hover:text-orange-300"
+                    : "cursor-not-allowed text-slate-600"
+                }`}
+              >
+                <SiLeetcode />
+              </a>
 
-            {/* Notes */}
-            <button
-              onClick={() => setShowNotes(!showNotes)}
-              className="text-gray-400 hover:text-purple-400 transition"
-            >
-              <FaRegBookmark />
-            </button>
+              <a
+                href={problem.links?.gfg || "#"}
+                target="_blank"
+                rel="noreferrer"
+                className={`rounded-lg p-2 transition ${
+                  problem.links?.gfg
+                    ? "text-emerald-400 hover:bg-emerald-400/10 hover:text-emerald-300"
+                    : "cursor-not-allowed text-slate-600"
+                }`}
+              >
+                <SiGeeksforgeeks />
+              </a>
 
-            {/* Solution */}
-            <button
-              onClick={() => alert(problem.solution || "No solution yet")}
-              className="text-gray-400 hover:text-purple-400 transition"
-            >
-              <FaLink />
-            </button>
+              <button
+                onClick={() => setShowNotes(!showNotes)}
+                className={`rounded-lg p-2 transition ${
+                  showNotes
+                    ? "bg-purple-500/20 text-purple-300"
+                    : "text-slate-400 hover:bg-purple-500/10 hover:text-purple-300"
+                }`}
+              >
+                <FaRegBookmark />
+              </button>
+
+              <button
+                onClick={() => alert(problem.solution || "No solution yet")}
+                className="rounded-lg p-2 text-slate-400 transition hover:bg-indigo-500/10 hover:text-indigo-300"
+              >
+                <FaLink />
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* NOTES */}
+        {showNotes && (
+          <div className="mt-5 rounded-xl border border-slate-700/70 bg-slate-950/40 p-4">
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Write your notes..."
+              className="min-h-27.5 w-full rounded-xl border border-slate-700 bg-[#0e1424] p-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+            />
+
+            <button className="mt-3 rounded-lg bg-linear-to-r from-purple-500 to-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-purple-500/20 transition hover:brightness-110">
+              Save Notes
+            </button>
+          </div>
+        )}
       </div>
-
-      {/* NOTES SECTION */}
-      {showNotes && (
-        <div className="mt-4">
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="Write your notes..."
-            className="w-full p-3 bg-[#111827] rounded-lg border border-gray-700 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-          />
-
-          <button className="mt-2 px-4 py-1.5 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm shadow-md shadow-purple-500/20 transition">
-            Save Notes
-          </button>
-        </div>
-      )}
     </div>
   );
 }
+
+export default memo(ProblemItem);
