@@ -46,7 +46,7 @@ export default function Navbar() {
             {/* Profile Circle */}
             <div
               onClick={() => setOpen(!open)}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center cursor-pointer font-semibold text-white bg-gradient-to-r from-purple-500 to-indigo-500 shadow-md shadow-purple-500/30 hover:scale-105 transition"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center cursor-pointer font-semibold text-white bg-linear-to-r from-purple-500 to-indigo-500 shadow-md shadow-purple-500/30 hover:scale-105 transition"
             >
               {initials}
             </div>
