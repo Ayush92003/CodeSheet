@@ -275,8 +275,8 @@ export default function Home() {
 
                   {/* Accordion Content */}
                   <div
-                    className={`overflow-hidden transition-all duration-300 ${
-                      isOpen ? "max-h-250" : "max-h-0"
+                    className={`overflow-hidden transition-all duration-500 ${
+                      isOpen ? "max-h-500" : "max-h-0"
                     }`}
                   >
                     <div className="bg-[#0f0f0f]/80 backdrop-blur-md rounded-xl border border-gray-800">
