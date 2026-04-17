@@ -1,5 +1,5 @@
 export default function Dashboard({ solved, total }) {
-  const percent = Math.round((solved / total) * 100 || 0);
+  const percent = total === 0 ? 0 : Math.round((solved / total) * 100);
   const user = JSON.parse(localStorage.getItem("user"));
 
   const radius = 40;
